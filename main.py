@@ -1,6 +1,7 @@
 import argparse
 import copy
 
+import numpy as np
 import open3d as o3d
 
 LOG = True
@@ -119,7 +120,8 @@ def refine_registration(source, target, source_fpfh, target_fpfh, voxel_size,
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process global registration of point clouds')
+    parser = argparse.ArgumentParser(description='Process global registration of point clouds and saves '
+                                                 'result transformation matrix to "finalreg.txt"')
     parser.add_argument('source', metavar='source', help='source point cloud')
     parser.add_argument('target', metavar='target', help='target point cloud')
     parser.add_argument('--voxel', '-v', dest='voxel', action='store',
@@ -147,6 +149,7 @@ if __name__ == "__main__":
     if args.preview:
         draw_registration_result(source_down, target_down, result_ransac.transformation)
     print(result_ransac)
+    np.savetxt("prereg.txt", result_ransac.transformation, fmt="%d,")
     # result_fast = execute_fast_global_registration(source_down, target_down,
     #                                             source_fpfh, target_fpfh,
     #                                             voxel_size)
@@ -154,6 +157,7 @@ if __name__ == "__main__":
     # draw_registration_result(source_down, target_down, result_fast.transformation)
     result_icp = refine_registration(source, target, source_fpfh, target_fpfh,
                                      voxel_size, result_ransac, 0.002)
+    np.savetxt("finalreg.txt", result_icp.transformation, fmt="%20f,")
     print(result_icp)
     if args.preview:
         draw_registration_result(source, target, result_icp.transformation)
