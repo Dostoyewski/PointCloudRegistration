@@ -7,9 +7,10 @@ import open3d as o3d
 LOG = True
 
 
-def draw_registration_result(source, target, transformation):
+def draw_registration_result(source, target, transformation, window_name="Result"):
     """
     Displays registration result
+    :param window_name: name of window
     :param source: source PointCloud
     :param target: target PointCloud
     :param transformation: transformation from target to source
@@ -20,7 +21,7 @@ def draw_registration_result(source, target, transformation):
     source_temp.paint_uniform_color([1, 0.706, 0])
     target_temp.paint_uniform_color([0, 0.651, 0.929])
     source_temp.transform(transformation)
-    o3d.visualization.draw_geometries([source_temp, target_temp])
+    o3d.visualization.draw_geometries([source_temp, target_temp], window_name=window_name)
 
 
 def preprocess_point_cloud(pcd, voxel_size):
@@ -147,7 +148,7 @@ if __name__ == "__main__":
                                                 source_fpfh, target_fpfh,
                                                 voxel_size)
     if args.preview:
-        draw_registration_result(source_down, target_down, result_ransac.transformation)
+        draw_registration_result(source_down, target_down, result_ransac.transformation, window_name="Pre-registration")
     print(result_ransac)
     np.savetxt("prereg.txt", result_ransac.transformation, fmt="%d,")
     # result_fast = execute_fast_global_registration(source_down, target_down,
@@ -160,4 +161,4 @@ if __name__ == "__main__":
     np.savetxt("finalreg.txt", result_icp.transformation, fmt="%20f,")
     print(result_icp)
     if args.preview:
-        draw_registration_result(source, target, result_icp.transformation)
+        draw_registration_result(source, target, result_icp.transformation, window_name="Registration Result")
